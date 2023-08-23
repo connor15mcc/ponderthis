@@ -1,6 +1,6 @@
 # Ponder This
 
-My attempts to solve IBM's ![ponder this](https://research.ibm.com/haifa/ponderthis/index.shtml) challenge.
+My attempts to solve IBM's [ponder this](https://research.ibm.com/haifa/ponderthis/index.shtml) challenge.
 
 # Challenges
 ## Aug 2023
