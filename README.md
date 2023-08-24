@@ -3,7 +3,7 @@
 My attempts to solve IBM's [ponder this](https://research.ibm.com/haifa/ponderthis/index.shtml) challenge.
 
 # Challenges
-## Aug 2023
+## Aug 2023 (✔️)
 
 ### Counting Square-Triangular numbers below 10^100
 - Found `BigUint` in rust to allow usage of numbers larger than $2^64 - 1$
