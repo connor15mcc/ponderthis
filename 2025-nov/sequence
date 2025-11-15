@@ -1,0 +1,40 @@
+#!/usr/bin/env python3
+
+import sys
+
+def generate_next(s):
+    """Generate the next string in the sequence by applying substitution rules."""
+    rules = {
+        'G': 'T',
+        'T': 'CA',
+        'C': 'TG',
+        'A': 'C'
+    }
+    return ''.join(rules[char] for char in s)
+
+def generate_sequence(n):
+    """Generate the first n strings in the sequence."""
+    strings = ["CAT"]
+
+    for i in range(n - 1):
+        strings.append(generate_next(strings[-1]))
+
+    return strings
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python3 sequence.py <number_of_strings>")
+        sys.exit(1)
+
+    try:
+        n = int(sys.argv[1])
+        if n < 1:
+            print("Error: number of strings must be at least 1")
+            sys.exit(1)
+    except ValueError:
+        print("Error: argument must be an integer")
+        sys.exit(1)
+
+    sequences = generate_sequence(n)
+    for i, s in enumerate(sequences):
+        print(s)

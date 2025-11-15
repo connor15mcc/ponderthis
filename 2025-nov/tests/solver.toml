@@ -1,0 +1,86 @@
+# Test cases for the Solver
+# Format:
+# [[test]]
+# range = [start, end]
+# seqs = ["sequence1", "sequence2", ...]
+# expected = "expected_substring"
+# n = integer value for parity filtering
+
+# All in frontier additions
+[[test]]
+range = [3, 5]
+seqs = ["CAT"]
+expected = "CA"
+n = 1
+
+[[test]]
+range = [5, 8]
+seqs = ["CAT", "TGCCA"]
+expected = "TGC"
+n = 2
+
+[[test]]
+range = [8, 13]
+seqs = ["CAT", "TGCCA", "CATTGTGC"]
+expected = "CATTG"
+n = 3
+
+# indexed later in frontier
+[[test]]
+range = [4, 5]
+seqs = ["CAT"]
+expected = "A"
+n = 1
+
+[[test]]
+range = [10, 13]
+seqs = ["CAT", "TGCCA", "CATTGTGC"]
+expected = "TTG"
+n = 3
+
+[[test]]
+range = [8, 11]
+seqs = ["CAT", "TGCCA", "CATTGTGC"]
+expected = "CAT"
+n = 3
+
+# Parity edge cases - testing even vs odd n values
+[[test]]
+range = [13, 21]
+seqs = ["CAT", "TGCCA", "CATTGTGC", "TGCCACATCATTG"]
+expected = "TGCCACAT"
+n = 4
+
+[[test]]
+range = [21, 34]
+seqs = ["CAT", "TGCCA", "CATTGTGC", "TGCCACATCATTG", "CATTGTGCTGCCATGCCACAT"]
+expected = "CATTGTGCTGCCA"
+n = 5
+
+# Larger ranges requiring more reductions
+[[test]]
+range = [34, 55]
+seqs = ["CAT", "TGCCA", "CATTGTGC", "TGCCACATCATTG", "CATTGTGCTGCCATGCCACAT", "TGCCACATCATTGCATTGTGCCATTGTGCTGCCA"]
+expected = "TGCCACATCATTGCATTGTGC"
+n = 6
+
+# Testing with higher index sequences
+[[test]]
+range = [55, 89]
+seqs = ["CAT", "TGCCA", "CATTGTGC", "TGCCACATCATTG", "CATTGTGCTGCCATGCCACAT", "TGCCACATCATTGCATTGTGCCATTGTGCTGCCA", "CATTGTGCTGCCATGCCACATTGCCACATCATTGTGCCACATCATTGCATTGTGC"]
+expected = "CATTGTGCTGCCATGCCACATTGCCACATCATTG"
+n = 7
+
+# From Corban:
+[[test]]
+range = [16, 21]
+seqs = ["CAT", "TGCCA", "CATTGTGC", "TGCCACATCATTG"]
+expected = "CACAT"
+n = 4
+
+# # Bisection of a fibonacci
+# [[test]]
+# range = [28, 30]
+# seqs = ["CAT", "TGCCA", "CATTGTGC", "TGCCACATCATTG"]
+# expected = "CT"
+# n = 5
