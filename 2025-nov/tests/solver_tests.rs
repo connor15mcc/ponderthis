@@ -1,6 +1,6 @@
 use num_bigint::BigUint;
 use serde::Deserialize;
-use ponderthis_nov::{Range, Solver};
+use ponderthis_nov::{Parity, Range, Solver};
 use tracing_subscriber::layer::SubscriberExt;
 use std::sync::{Arc, Mutex};
 
@@ -98,6 +98,7 @@ fn run_solver_tests() {
 
         // Create range
         let range = Range {
+            parity: Parity::from(case.n),
             start: BigUint::from(case.range[0]),
             end: BigUint::from(case.range[1]),
         };

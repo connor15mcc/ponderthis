@@ -20,6 +20,16 @@ pub enum Parity {
     Odd,
 }
 
+impl Parity {
+    /// Flip the parity
+    pub fn flip(self) -> Parity {
+        match self {
+            Parity::Even => Parity::Odd,
+            Parity::Odd => Parity::Even,
+        }
+    }
+}
+
 impl From<usize> for Parity {
     fn from(n: usize) -> Self {
         if n % 2 == 0 {
@@ -45,6 +55,7 @@ impl From<&BigUint> for Parity {
 pub struct Range {
     pub start: BigUint,
     pub end: BigUint,
+    pub parity: Parity
 }
 
 pub struct SolveResult {
@@ -83,6 +94,10 @@ impl Solver {
     }
 
     fn reduce_range_with_count(&self, range: &Range, count: usize) -> ((Range, Option<usize>), usize) {
+        self.reduce_range_with_count_and_prev_index(range, count, None)
+    }
+
+    fn reduce_range_with_count_and_prev_index(&self, range: &Range, count: usize, prev_index: Option<usize>) -> ((Range, Option<usize>), usize) {
         // Find the largest Fibonacci number less than or equal to the start, with its index
         let result = self.fibs.iter()
             .enumerate()
@@ -91,7 +106,13 @@ impl Solver {
 
         match result {
             Some((index, fib)) => {
-                debug!(fib = %fib, fib_index = index, "Found Fibonacci number to subtract");
+                debug!(
+                    fib = %fib,
+                    fib_index = index,
+                    current_start = %range.start,
+                    current_end = %range.end,
+                    "Found Fibonacci number to subtract"
+                );
 
                 if let Some(next) = self.fibs.get(index + 1) {
                     if range.start <= *next && *next < range.end {
@@ -100,13 +121,38 @@ impl Solver {
                 }
 
                 // Subtract from both start and end
+                // Parity flips if the difference between previous and current index is odd
+                let new_parity = if let Some(prev_idx) = prev_index {
+                    let index_diff = prev_idx - index;
+                    let diff_parity = Parity::from(index_diff);
+                    if diff_parity == Parity::Odd {
+                        range.parity.flip()
+                    } else {
+                        range.parity
+                    }
+                } else {
+                    // First reduction, no flip
+                    range.parity
+                };
+
                 let reduced = Range {
                     start: &range.start - fib,
                     end: &range.end - fib,
+                    parity: new_parity,
                 };
 
+                debug!(
+                    reduced_start = %reduced.start,
+                    reduced_end = %reduced.end,
+                    old_parity = ?range.parity,
+                    prev_index = ?prev_index,
+                    current_index = index,
+                    new_parity = ?new_parity,
+                    "After subtracting Fibonacci"
+                );
+
                 // Recursively reduce the new range
-                let ((final_range, recursive_index), final_count) = self.reduce_range_with_count(&reduced, count + 1);
+                let ((final_range, recursive_index), final_count) = self.reduce_range_with_count_and_prev_index(&reduced, count + 1, Some(index));
                 // Use the index from the recursive call if it exists, otherwise use this one
                 ((final_range, recursive_index.or(Some(index))), final_count)
             }
@@ -186,13 +232,16 @@ impl Solver {
 
         let mut substring = seq[start_idx..end_idx].to_string();
 
-        // Check if we need to flip bases (when n and fib_index have different parities)
-        let n_parity = Parity::from(&self.n);
-        let fib_parity = Parity::from(fib_index);
+        // Check if we need to flip bases using the tracked parity from the reduced range
+        // The range parity has been updated throughout all reductions
+        let range_parity = reduced_range.parity;
+        let seq_parity = Parity::from(seq_index);
 
-        if n_parity == fib_parity {
-            info!(n_parity = ?n_parity, fib_parity = ?fib_parity, "n and fib_index have different parities, flipping bases: A↔G, C↔T");
+        if range_parity == seq_parity {
+            info!(range_parity = ?range_parity, seq_parity = ?seq_parity, "Range and sequence have matching parities, flipping bases: A↔G, C↔T");
             substring = flip_bases(&substring);
+        } else {
+            info!(range_parity = ?range_parity, seq_parity = ?seq_parity, "Range and sequence have different parities, no flip needed");
         }
 
         info!(substring_len = substring.len(), seq_index, "Solve complete");

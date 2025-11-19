@@ -1,5 +1,5 @@
 use num_bigint::BigUint;
-use ponderthis_nov::{Range, Solver};
+use ponderthis_nov::{Parity, Range, Solver};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 fn parse_fibs() -> Vec<BigUint> {
@@ -43,7 +43,11 @@ fn main() {
 
     let fibs = parse_fibs();
     let seqs = parse_seqs();
-    let range = Range { start, end };
+    let range = Range {
+        parity: Parity::from(&n),
+        start,
+        end
+    };
 
     // Create solver and solve
     let solver = Solver::new_with_biguint(range, fibs, seqs, &n);
